@@ -76,9 +76,9 @@ function CategoryManager() {
   };
 
   return (
-    <Card style={{ boxShadow: '0 2px 16px #eee', borderRadius: 16, marginBottom: 32 }}>
+    <Card className="category-manager-card">
       <Card.Body>
-        <h3 style={{ fontWeight: 'bold', color: '#c81b84', textAlign: 'center' }}>
+        <h3 className="manager-title">
           {editingId ? 'Edit Category' : 'Create Category'}
         </h3>
         {message && (
@@ -86,10 +86,17 @@ function CategoryManager() {
             {message}
           </Alert>
         )}
-        <Form onSubmit={handleSubmit} encType="multipart/form-data">
+        <Form onSubmit={handleSubmit} encType="multipart/form-data" className="manager-form">
           <Form.Group className="mb-3">
             <Form.Label>Name</Form.Label>
-            <Form.Control name="name" value={form.name} onChange={handleChange} required placeholder="Category Name" />
+            <Form.Control
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              required
+              placeholder="Category Name"
+              className="form-control-custom"
+            />
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Image</Form.Label>
@@ -100,62 +107,80 @@ function CategoryManager() {
                 accept="image/*"
                 onChange={handleFileChange}
                 ref={fileInputRef}
+                className="form-control-custom"
               />
-              {(file || form.img) && (
-                <InputGroup.Text>
+              <InputGroup.Text>
+                {file || form.img ? (
                   <img
                     src={file ? URL.createObjectURL(file) : `http://localhost:4000${form.img.replace('./', '/')}`}
                     alt="preview"
-                    style={{ width: 32, height: 32, objectFit: 'cover', borderRadius: 8 }}
+                    className="image-preview"
                   />
-                </InputGroup.Text>
-              )}
+                ) : (
+                  <div className="image-preview-placeholder">No Image</div>
+                )}
+              </InputGroup.Text>
             </InputGroup>
             {editingId && !file && form.img && (
-              <div style={{ fontSize: 12, color: '#888', marginTop: 4 }}>
-                Current: <img src={`http://localhost:4000${form.img.replace('./', '/')}`} alt="current" style={{ width: 24, height: 24, borderRadius: 4 }} />
+              <div className="current-image-info">
+                Current: <img src={`http://localhost:4000${form.img.replace('./', '/')}`} alt="current" className="current-image-thumb" />
               </div>
             )}
           </Form.Group>
-          <div className="d-grid gap-2">
-            <Button type="submit" variant="primary" size="lg">
-              {editingId ? 'Update' : 'Create'}
+          <div className="form-buttons">
+            <Button type="submit" variant="primary" className="btn-submit">
+              {editingId ? 'Update Category' : 'Create Category'}
             </Button>
             {editingId && (
-              <Button variant="secondary" size="lg" onClick={() => { setEditingId(null); setForm({ name: '', img: '' }); setFile(null); fileInputRef.current.value = ''; }}>
+              <Button
+                variant="secondary"
+                className="btn-cancel"
+                onClick={() => {
+                  setEditingId(null);
+                  setForm({ name: '', img: '' });
+                  setFile(null);
+                  fileInputRef.current.value = '';
+                }}
+              >
                 Cancel
               </Button>
             )}
           </div>
         </Form>
-        <h4 style={{ fontWeight: 'bold', margin: '32px 0 16px' }}>Category List</h4>
-        <Table responsive bordered hover>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Image</th>
-              <th style={{ textAlign: 'center' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {categories.map(c => (
-              <tr key={c.id}>
-                <td style={{ verticalAlign: 'middle' }}>{c.name}</td>
-                <td style={{ verticalAlign: 'middle' }}>
-                  <img src={`http://localhost:3000${c.img.replace('./', '/')}`} alt={c.name} style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 8, border: '1px solid #eee' }} />
-                </td>
-                <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
-                  <Button size="sm" variant="warning" className="me-2" onClick={() => handleEdit(c)}>
-                    Edit
-                  </Button>
-                  <Button size="sm" variant="danger" onClick={() => handleDelete(c.id)}>
-                    Delete
-                  </Button>
-                </td>
+        <h4 className="list-title">Category List</h4>
+        <div className="table-container">
+          <Table responsive bordered hover className="data-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Image</th>
+                <th className="text-center">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {(categories || []).map(c => (
+                <tr key={c.id}>
+                  <td>{c.name}</td>
+                  <td>
+                    <img
+                      src={`http://localhost:3000${c.img.replace('./', '/')}`}
+                      alt={c.name}
+                      className="table-image"
+                    />
+                  </td>
+                  <td className="text-center action-buttons">
+                    <Button size="sm" variant="warning" className="btn-edit me-2" onClick={() => handleEdit(c)}>
+                      Edit
+                    </Button>
+                    <Button size="sm" variant="danger" className="btn-delete" onClick={() => handleDelete(c.id)}>
+                      Delete
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
       </Card.Body>
     </Card>
   );

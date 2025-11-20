@@ -80,9 +80,9 @@ function BrandManager() {
   };
 
   return (
-    <Card style={{ boxShadow: '0 2px 16px #eee', borderRadius: 16, marginBottom: 32 }}>
+    <Card className="brand-manager-card">
       <Card.Body>
-        <h3 style={{ fontWeight: 'bold', color: '#c81b84', textAlign: 'center' }}>
+        <h3 className="manager-title">
           {editingId ? 'Edit Brand' : 'Create Brand'}
         </h3>
         {message && (
@@ -90,10 +90,17 @@ function BrandManager() {
             {message}
           </Alert>
         )}
-        <Form onSubmit={handleSubmit} encType="multipart/form-data">
+        <Form onSubmit={handleSubmit} encType="multipart/form-data" className="manager-form">
           <Form.Group className="mb-3">
             <Form.Label>Name</Form.Label>
-            <Form.Control name="name" value={form.name} onChange={handleChange} required placeholder="Brand Name" />
+            <Form.Control
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              required
+              placeholder="Brand Name"
+              className="form-control-custom"
+            />
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Image</Form.Label>
@@ -104,62 +111,80 @@ function BrandManager() {
                 accept="image/*"
                 onChange={handleFileChange}
                 ref={fileInputRef}
+                className="form-control-custom"
               />
-              {(file || form.img) && (
-                <InputGroup.Text>
+              <InputGroup.Text>
+                {file || form.img ? (
                   <img
                     src={file ? URL.createObjectURL(file) : form.img}
                     alt="preview"
-                    style={{ width: 32, height: 32, objectFit: 'cover', borderRadius: 8 }}
+                    className="image-preview"
                   />
-                </InputGroup.Text>
-              )}
+                ) : (
+                  <div className="image-preview-placeholder">No Image</div>
+                )}
+              </InputGroup.Text>
             </InputGroup>
             {editingId && !file && form.img && (
-              <div style={{ fontSize: 12, color: '#888', marginTop: 4 }}>
-                Current: <img src={form.img} alt="current" style={{ width: 24, height: 24, borderRadius: 4 }} />
+              <div className="current-image-info">
+                Current: <img src={form.img} alt="current" className="current-image-thumb" />
               </div>
             )}
           </Form.Group>
-          <div className="d-grid gap-2">
-            <Button type="submit" variant="primary" size="lg">
-              {editingId ? 'Update' : 'Create'}
+          <div className="form-buttons">
+            <Button type="submit" variant="primary" className="btn-submit">
+              {editingId ? 'Update Brand' : 'Create Brand'}
             </Button>
             {editingId && (
-              <Button variant="secondary" size="lg" onClick={() => { setEditingId(null); setForm({ name: '', img: '' }); setFile(null); fileInputRef.current.value = ''; }}>
+              <Button
+                variant="secondary"
+                className="btn-cancel"
+                onClick={() => {
+                  setEditingId(null);
+                  setForm({ name: '', img: '' });
+                  setFile(null);
+                  fileInputRef.current.value = '';
+                }}
+              >
                 Cancel
               </Button>
             )}
           </div>
         </Form>
-        <h4 style={{ fontWeight: 'bold', margin: '32px 0 16px' }}>Brand List</h4>
-        <Table responsive bordered hover border="1" style={{ borderRadius: 8, overflow: 'hidden' }}>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Image</th>
-              <th style={{ textAlign: 'center' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {brands.map(b => (
-              <tr key={b.id}>
-                <td style={{ verticalAlign: 'middle' }}>{b.name}</td>
-                <td style={{ verticalAlign: 'middle' }}>
-                  <img src={`http://localhost:3000${b.img.replace('./', '/')}`} alt={b.name} style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 8, border: '1px solid #eee' }} />
-                </td>
-                <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
-                  <Button size="sm" variant="warning" className="me-2" onClick={() => handleEdit(b)}>
-                    Edit
-                  </Button>
-                  <Button size="sm" variant="danger" onClick={() => handleDelete(b.id)}>
-                    Delete
-                  </Button>
-                </td>
+        <h4 className="list-title">Brand List</h4>
+        <div className="table-container">
+          <Table responsive bordered hover className="data-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Image</th>
+                <th className="text-center">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {brands.map(b => (
+                <tr key={b.id}>
+                  <td>{b.name}</td>
+                  <td>
+                    <img
+                      src={`http://localhost:3000${b.img.replace('./', '/')}`}
+                      alt={b.name}
+                      className="table-image"
+                    />
+                  </td>
+                  <td className="text-center action-buttons">
+                    <Button size="sm" variant="warning" className="btn-edit me-2" onClick={() => handleEdit(b)}>
+                      Edit
+                    </Button>
+                    <Button size="sm" variant="danger" className="btn-delete" onClick={() => handleDelete(b.id)}>
+                      Delete
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
       </Card.Body>
     </Card>
   );
